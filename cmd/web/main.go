@@ -1,7 +1,7 @@
 package main
 
 import (
-	"databse/sql"
+	"database/sql"
 	"flag"
 	"log"
 	"net/http"
@@ -18,7 +18,7 @@ type application struct {
 func main() {
 	//primero el nombre del flag, -addr, valod default, string explicando lo que hace
 	addr := flag.String("addr", ":4000", "HTTP network address")
-	dsn := flag.String("dsn", "web:password@/snippetbox?parseTime=true", "MYSQL data source name")
+	dsn := flag.String("dsn", "web:password@tcp(127.0.0.1:3306)/snippetbox?parseTime=true", "MYSQL data source name")
 	//leemos el valor del flag, si no hacemos esto siempre es defualt
 	flag.Parse()
 
@@ -53,5 +53,12 @@ func main() {
 }
 
 func openDB(dsn string) (*sql.DB, error) {
-	
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		return nil, err
+	}
+	if err = db.Ping(); err != nil {
+		return nil, err
+	}
+	return db, nil
 }
